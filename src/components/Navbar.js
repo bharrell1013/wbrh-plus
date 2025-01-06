@@ -1,7 +1,21 @@
-import React from 'react';
+// components/Navbar.js
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getCategories } from '../firebaseUtils';
 
 const Navbar = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const categoriesData = await getCategories();
+      console.log('Navbar categories:', categoriesData);
+      setCategories(categoriesData);
+    };
+
+    fetchCategories();
+  }, []);
+
   return (
     <nav className="fixed top-0 w-full bg-[#0F1014] bg-opacity-90 z-50 px-8 py-4">
       <div className="flex items-center justify-between">
@@ -10,9 +24,15 @@ const Navbar = () => {
             WBRH<span className="text-3xl font-light">+</span>
           </Link>
           <div className="hidden md:flex space-x-6">
-            <Link to="/category/react" className="text-gray-300 hover:text-white">React</Link>
-            <Link to="/category/react-native" className="text-gray-300 hover:text-white">React Native</Link>
-            <Link to="/category/films" className="text-gray-300 hover:text-white">Films</Link>
+            {categories.map(category => (
+              <Link 
+                key={category.id}
+                to={`/category/${category.id}`}
+                className="text-gray-300 hover:text-white"
+              >
+                {category.title}
+              </Link>
+            ))}
           </div>
         </div>
         <div className="flex items-center space-x-4">
