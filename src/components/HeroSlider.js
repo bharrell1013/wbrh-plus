@@ -8,7 +8,7 @@ const HeroSlider = () => {
     {
       id: 1,
       title: "Featured Project 1",
-      image: "/api/placeholder/1200/500",
+      image: "https://firebasestorage.googleapis.com/v0/b/wbrh-plus.firebasestorage.app/o/gamequill.png?alt=media&token=b044a49e-c70e-4e12-adef-9195ca293d6b",
       category: "React"
     },
     // Add more featured projects

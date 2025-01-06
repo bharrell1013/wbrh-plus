@@ -1,6 +1,8 @@
 // pages/ProjectPage.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 // Tab components
 const TabButton = ({ active, children, onClick }) => (
@@ -19,40 +21,54 @@ const TabButton = ({ active, children, onClick }) => (
 const ProjectPage = () => {
   const { projectId } = useParams();
   const [activeTab, setActiveTab] = useState('images');
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Mock project data - replace with your actual data
-  const project = {
-    title: "Project Name",
-    subtitle: "React • TypeScript • 2024",
-    description: "A comprehensive description of the project and its key features. This showcases the main functionality and technical achievements.",
-    image: "/api/placeholder/1200/600",
-    tags: ["HD", "React", "TypeScript"],
-    images: [
-      {
-        id: 1,
-        title: "Homepage Design",
-        thumbnail: "/api/placeholder/300/200",
-        description: "The main landing page featuring responsive design"
-      },
-      {
-        id: 2,
-        title: "Dashboard View",
-        thumbnail: "/api/placeholder/300/200",
-        description: "Interactive dashboard with real-time data"
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        setLoading(true);
+        const projectRef = doc(db, 'projects', projectId);
+        const projectSnap = await getDoc(projectRef);
+        
+        if (projectSnap.exists()) {
+          const projectData = {
+            id: projectSnap.id,
+            ...projectSnap.data(),
+            createdAt: projectSnap.data().createdAt?.toDate()
+          };
+          console.log('Fetched project:', projectData);
+          setProject(projectData);
+        } else {
+          setError('Project not found');
+        }
+      } catch (err) {
+        console.error('Error fetching project:', err);
+        setError('Error loading project');
+      } finally {
+        setLoading(false);
       }
-    ],
-    technologies: ["React", "TypeScript", "Node.js", "MongoDB"],
-    features: [
-      "Responsive Design",
-      "Real-time Updates",
-      "Authentication System",
-      "Data Visualization"
-    ],
-    links: {
-      github: "https://github.com/username/project",
-      live: "https://project-demo.com"
-    }
-  };
+    };
+
+    fetchProject();
+  }, [projectId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0F1014] flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error || !project) {
+    return (
+      <div className="min-h-screen bg-[#0F1014] flex items-center justify-center">
+        <div className="text-white">{error || 'Project not found'}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0F1014] pt-16">
@@ -60,7 +76,7 @@ const ProjectPage = () => {
       <div className="relative h-[70vh] w-full">
         <div className="absolute inset-0">
           <img 
-            src={project.image} 
+            src={project.imageUrl || "/api/placeholder/1200/600"}
             alt={project.title}
             className="w-full h-full object-cover"
           />
@@ -71,9 +87,11 @@ const ProjectPage = () => {
         <div className="absolute bottom-0 left-0 p-8 w-full">
           <div className="max-w-3xl">
             <h1 className="text-5xl font-bold text-white mb-4">{project.title}</h1>
-            <p className="text-gray-300 text-lg mb-4">{project.subtitle}</p>
-            <div className="flex space-x-2 mb-6">
-              {project.tags.map(tag => (
+            <p className="text-gray-300 text-lg mb-4">
+              {[...project.technologies || []].join(' • ')} • {project.createdAt?.getFullYear()}
+            </p>
+            <div className="flex flex-wrap space-x-2 mb-6">
+              {project.technologies?.map(tag => (
                 <span key={tag} className="px-2 py-1 bg-gray-800 rounded-sm text-sm text-gray-300">
                   {tag}
                 </span>
@@ -81,22 +99,26 @@ const ProjectPage = () => {
             </div>
             <p className="text-gray-200 text-lg mb-8">{project.description}</p>
             <div className="flex space-x-4">
-              <a 
-                href={project.links.live} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="px-8 py-3 bg-white text-black rounded hover:bg-gray-200 transition-colors"
-              >
-                VIEW LIVE
-              </a>
-              <a 
-                href={project.links.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-8 py-3 bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors"
-              >
-                GITHUB
-              </a>
+              {project.links?.live && (
+                <a 
+                  href={project.links.live} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="px-8 py-3 bg-white text-black rounded hover:bg-gray-200 transition-colors"
+                >
+                  VIEW LIVE
+                </a>
+              )}
+              {project.links?.github && (
+                <a 
+                  href={project.links.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-8 py-3 bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors"
+                >
+                  GITHUB
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -113,12 +135,6 @@ const ProjectPage = () => {
               IMAGES
             </TabButton>
             <TabButton 
-              active={activeTab === 'suggested'} 
-              onClick={() => setActiveTab('suggested')}
-            >
-              SUGGESTED
-            </TabButton>
-            <TabButton 
               active={activeTab === 'details'} 
               onClick={() => setActiveTab('details')}
             >
@@ -132,51 +148,57 @@ const ProjectPage = () => {
       <div className="max-w-7xl mx-auto px-8 py-8">
         {activeTab === 'images' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {project.images.map(image => (
-              <div key={image.id} className="bg-gray-900 rounded-lg overflow-hidden">
+            {project.images?.map((image, index) => (
+              <div key={index} className="bg-gray-900 rounded-lg overflow-hidden">
                 <img 
-                  src={image.thumbnail} 
-                  alt={image.title}
+                  src={image.url || "/api/placeholder/300/200"}
+                  alt={image.title || `Project image ${index + 1}`}
                   className="w-full h-48 object-cover"
                 />
-                <div className="p-4">
-                  <h3 className="text-white font-medium mb-2">{image.title}</h3>
-                  <p className="text-gray-400 text-sm">{image.description}</p>
-                </div>
+                {(image.title || image.description) && (
+                  <div className="p-4">
+                    {image.title && (
+                      <h3 className="text-white font-medium mb-2">{image.title}</h3>
+                    )}
+                    {image.description && (
+                      <p className="text-gray-400 text-sm">{image.description}</p>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
+            {(!project.images || project.images.length === 0) && (
+              <div className="text-gray-400">No images available</div>
+            )}
           </div>
         )}
 
         {activeTab === 'details' && (
           <div className="text-white">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold mb-4">Technologies Used</h2>
-              <div className="flex flex-wrap gap-2">
-                {project.technologies.map(tech => (
-                  <span key={tech} className="px-3 py-1 bg-gray-800 rounded">
-                    {tech}
-                  </span>
-                ))}
+            {project.technologies && project.technologies.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">Technologies Used</h2>
+                <div className="flex flex-wrap gap-2">
+                  {project.technologies.map(tech => (
+                    <span key={tech} className="px-3 py-1 bg-gray-800 rounded">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold mb-4">Key Features</h2>
-              <ul className="list-disc pl-5 space-y-2">
-                {project.features.map(feature => (
-                  <li key={feature} className="text-gray-300">
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'suggested' && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {/* Add suggested projects here */}
-            <div className="text-gray-400">Similar projects will appear here</div>
+            )}
+            {project.features && project.features.length > 0 && (
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Key Features</h2>
+                <ul className="list-disc pl-5 space-y-2">
+                  {project.features.map(feature => (
+                    <li key={feature} className="text-gray-300">
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
       </div>
