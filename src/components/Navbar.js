@@ -9,6 +9,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       const categoriesData = await getCategories();
+      categoriesData.reverse(); // Reverse order to show latest first
       console.log('Navbar categories:', categoriesData);
       setCategories(categoriesData);
     };
