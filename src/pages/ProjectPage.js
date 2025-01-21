@@ -73,12 +73,12 @@ const ProjectPage = () => {
   return (
     <div className="min-h-screen bg-[#0F1014] pt-16">
       {/* Hero Section */}
-      <div className="relative h-[70vh] w-full">
-        <div className="absolute inset-0">
+      <div className="relative w-full" style={{ height: "calc(100vh - 64px)" }}>
+        <div className="absolute inset-0 bg-gray-900">
           <img 
             src={project.imageUrl || "/api/placeholder/1200/600"}
             alt={project.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0F1014] via-transparent to-transparent" />
         </div>
@@ -150,11 +150,13 @@ const ProjectPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {project.images?.map((image, index) => (
               <div key={index} className="bg-gray-900 rounded-lg overflow-hidden">
-                <img 
-                  src={image.url || "/api/placeholder/300/200"}
-                  alt={image.title || `Project image ${index + 1}`}
-                  className="w-full h-48 object-cover"
-                />
+                <div className="aspect-[16/9] relative">
+                  <img 
+                    src={image.url || "/api/placeholder/300/200"}
+                    alt={image.title || `Project image ${index + 1}`}
+                    className="absolute w-full h-full object-contain bg-gray-900"
+                  />
+                </div>
                 {(image.title || image.description) && (
                   <div className="p-4">
                     {image.title && (

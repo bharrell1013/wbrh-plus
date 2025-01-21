@@ -33,12 +33,12 @@ const HeroSlider = ({ projects = [] }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Slides */}
-      <div className="relative w-full h-full">
+      <div className="relative w-full h-full bg-gray-900">
         {projects.map((project, index) => (
           <Link
             key={project.id}
             to={`/project/${project.id}`}
-            className={`absolute w-full h-full transition-opacity duration-500 ${
+            className={`absolute inset-0 transition-opacity duration-500 ${
               index === currentSlide ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -46,13 +46,13 @@ const HeroSlider = ({ projects = [] }) => {
               <img
                 src={project.imageUrl || "/api/placeholder/1920/1080"}
                 alt={project.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain bg-gray-900"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
               <div className="absolute bottom-0 left-0 p-8 max-w-2xl">
                 <h2 className="text-4xl font-bold text-white mb-4">{project.title}</h2>
                 <p className="text-gray-200 text-lg mb-4">{project.description}</p>
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap gap-2">
                   {project.technologies?.map(tech => (
                     <span key={tech} className="px-3 py-1 bg-white/20 rounded-full text-white text-sm">
                       {tech}
