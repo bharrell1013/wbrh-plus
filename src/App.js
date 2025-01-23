@@ -5,6 +5,8 @@ import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import CategoryPage from './pages/CategoryPage';
 import ProjectPage from './pages/ProjectPage';
+import AboutMePage from './pages/AboutMePage';
+import FilmMinorPage from './pages/FilmMinorPage';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,6 +27,8 @@ const App = () => {
       <Layout>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutMePage />} />
+          <Route path="/film-minor" element={<FilmMinorPage />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
           <Route path="/project/:projectId" element={<ProjectPage />} />
         </Routes>

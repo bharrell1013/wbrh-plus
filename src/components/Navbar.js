@@ -24,6 +24,12 @@ const Navbar = () => {
           <Link to="/" className="text-2xl font-bold text-white">
             WBRH<span className="text-3xl font-light">+</span>
           </Link>
+          <Link to="/about" className="text-gray-300 hover:text-white">
+              About Me
+            </Link>
+            <Link to="/film-minor" className="text-gray-300 hover:text-white">
+              Film Minor
+            </Link>
           <div className="hidden md:flex space-x-6">
             {categories.map(category => (
               <Link 
