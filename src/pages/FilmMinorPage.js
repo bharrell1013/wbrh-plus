@@ -1,24 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
-const YouTubeEmbed = ({ videoId, isHero = false }) => (
-  <div className={`w-full ${isHero ? 'h-full' : 'aspect-video'}`}>
-    <iframe
-      className="w-full h-full"
-      src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
-      title="YouTube video player"
-      frameBorder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
-    ></iframe>
-  </div>
-);
+const YouTubeEmbed = ({ videoId }) => {
+  return (
+    <div className="relative w-full h-full">
+      <iframe
+        className="absolute inset-0 w-full h-full"
+        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
+        title="YouTube video player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    </div>
+  );
+};
 
 const FilmMinorPage = () => {
   const [films, setFilms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentFilm, setCurrentFilm] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const fetchFilms = async () => {
@@ -45,75 +48,77 @@ const FilmMinorPage = () => {
     return match && match[1];
   };
 
-  const nextFilm = () => setCurrentFilm((prev) => (prev + 1) % films.length);
-  const prevFilm = () => setCurrentFilm((prev) => (prev - 1 + films.length) % films.length);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0F1014] flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="min-h-screen bg-[#0F1014] flex items-center justify-center">
+      <div className="text-white">Loading...</div>
+    </div>
+  );
 
   const currentFilmData = films[currentFilm];
 
   return (
     <div className="min-h-screen bg-[#0F1014] pt-16">
-      {/* Hero Section with Video */}
-      <div className="relative h-[calc(100vh-64px)]">
-        {/* Video Container */}
+      {/* Hero Section Container */}
+      <div 
+        className="relative w-full h-[60vh] bg-gray-900"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        {/* Base Video Layer */}
         <div className="absolute inset-0">
           {currentFilmData && (
-            <YouTubeEmbed 
-              videoId={getYouTubeId(currentFilmData.youtubeUrl)} 
-              isHero={true} 
-            />
+            <YouTubeEmbed videoId={getYouTubeId(currentFilmData.youtubeUrl)} />
           )}
         </div>
 
-        {/* Text Content Container - Positioned at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 z-10">
-          {/* Gradient Background for Text */}
-          <div className="absolute inset-0 h-80 bg-gradient-to-t from-[#0F1014] to-transparent" />
+        {/* Content Overlay - Using CSS grid for precise positioning */}
+        <div 
+          className={`absolute inset-0 transition-opacity duration-300 ${
+            isHovering ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
+        >
+          {/* Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F1014] via-[#0F1014]/50 to-transparent pointer-events-none" />
           
           {/* Content */}
-          <div className="relative p-8 max-w-3xl">
+          <div className="absolute bottom-0 left-0 right-0 p-8 pointer-events-none">
             {currentFilmData && (
-              <>
-                <h1 className="text-5xl font-bold text-white mb-4">
-                  {currentFilmData.title}
-                </h1>
-                <p className="text-gray-300 text-lg mb-4">
-                  {currentFilmData.date}
-                </p>
-                <p className="text-gray-200 text-lg mb-8">
-                  {currentFilmData.description}
-                </p>
+              <div className="max-w-3xl">
+                <h1 className="text-4xl font-bold text-white mb-2">{currentFilmData.title}</h1>
+                <p className="text-gray-300 text-base mb-2">{currentFilmData.date}</p>
+                <p className="text-gray-200 text-base mb-4">{currentFilmData.description}</p>
                 <div className="prose prose-invert">
-                  <h2 className="text-2xl font-bold text-white mb-4">Behind the Scenes</h2>
-                  <p className="text-gray-300">
-                    {currentFilmData.behindTheScenes}
-                  </p>
+                  <h2 className="text-xl font-bold text-white mb-2">Behind the Scenes</h2>
+                  <p className="text-gray-300 text-sm">{currentFilmData.behindTheScenes}</p>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Navigation Controls */}
-        <button
-          onClick={prevFilm}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
-        >
-          ←
-        </button>
-        <button
-          onClick={nextFilm}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
-        >
-          →
-        </button>
+        {/* Navigation Controls - Now with proper event handling */}
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-4 flex justify-between z-30">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentFilm(prev => (prev - 1 + films.length) % films.length);
+            }}
+            className="p-2 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
+            onMouseEnter={(e) => e.stopPropagation()}
+          >
+            ←
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentFilm(prev => (prev + 1) % films.length);
+            }}
+            className="p-2 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
+            onMouseEnter={(e) => e.stopPropagation()}
+          >
+            →
+          </button>
+        </div>
       </div>
 
       {/* Film Grid */}
@@ -123,10 +128,12 @@ const FilmMinorPage = () => {
           {films.map((film, index) => (
             <div
               key={film.id}
-              className="bg-gray-800 rounded-lg overflow-hidden cursor-pointer"
+              className="bg-gray-800 rounded-lg overflow-hidden cursor-pointer transform transition-transform hover:scale-105"
               onClick={() => setCurrentFilm(index)}
             >
-              <YouTubeEmbed videoId={getYouTubeId(film.youtubeUrl)} />
+              <div className="aspect-video relative">
+                <YouTubeEmbed videoId={getYouTubeId(film.youtubeUrl)} />
+              </div>
               <div className="p-4">
                 <h3 className="text-white font-medium text-lg mb-2">{film.title}</h3>
                 <p className="text-gray-400 text-sm">{film.date}</p>
