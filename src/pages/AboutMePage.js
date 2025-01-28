@@ -2,9 +2,18 @@ import React from 'react';
 
 const AboutMePage = () => {
   const skills = [
-    { category: 'Frontend', items: ['React', 'TypeScript', 'Tailwind CSS'] },
-    { category: 'Backend', items: ['Node.js', 'Python', 'Firebase'] },
-    { category: 'Tools', items: ['Git', 'Docker', 'VS Code'] },
+    { 
+      category: 'Languages', 
+      items: ['Java', 'JavaScript', 'C', 'C++', 'C#', 'Python'] 
+    },
+    { 
+      category: 'Technologies', 
+      items: ['React', 'React Native', 'SQL', 'Firebase', 'ASP.NET'] 
+    },
+    { 
+      category: 'Tools & Methods', 
+      items: ['Git', 'Agile/Scrum', 'Vim', 'Figma', 'Expo', 'Visual Studio'] 
+    },
   ];
 
   return (
@@ -24,9 +33,11 @@ const AboutMePage = () => {
         {/* Bio Section */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-6">Hello, World!</h2>
+          <p className="text-gray-300 text-lg leading-relaxed mb-4">
+            I'm Bailey Harrell, a senior Computer Science student at Purdue University with a passion for software engineering and movies. My journey in technology has been marked by a unique blend of academic excellence, hands-on development experience, and a creative approach to problem-solving.
+          </p>
           <p className="text-gray-300 text-lg leading-relaxed">
-            [Your introduction will go here. This should be a compelling narrative about 
-            your journey, passions, and what drives you in technology and film.]
+            From developing enterprise applications at D.R. Horton to creating and leading coding camps for youth, I've consistently sought opportunities to grow while helping others. I believe in the power of technology to make a positive impact, whether it's through building efficient software solutions or inspiring the next generation of developers.
           </p>
         </div>
 
@@ -57,14 +68,20 @@ const AboutMePage = () => {
           <div className="bg-gray-800 rounded-lg p-6">
             <h3 className="text-xl font-semibold text-white mb-4">Education</h3>
             <div className="text-gray-300">
-              <p className="font-medium">[Your University]</p>
-              <p className="text-sm">[Your Degree] - [Year]</p>
+              <p className="font-medium">Purdue University</p>
+              <p className="text-sm mb-2">Computer Science, Class of 2025 - GPA: 3.53</p>
+              <p className="text-sm">Tracks: Software Engineering & Algorithmic Foundations</p>
+              <p className="text-sm">Minor: Film and Video Studies</p>
             </div>
           </div>
           <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">Interests</h3>
+            <h3 className="text-xl font-semibold text-white mb-4">Achievements</h3>
             <div className="text-gray-300">
-              <p>[Your interests and hobbies will go here]</p>
+              <ul className="space-y-2">
+                <li>Certificate in Collaborative Leadership</li>
+                <li>MIT App Inventor App of the Month (2x Winner)</li>
+                <li>Eagle Scout</li>
+              </ul>
             </div>
           </div>
         </div>
