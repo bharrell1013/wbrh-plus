@@ -54,6 +54,12 @@ const ProjectPage = () => {
     fetchProject();
   }, [projectId]);
 
+  // Helper function to check if an image is a GIF
+  const isGif = (url) => {
+    if (!url) return false;
+    return url.toLowerCase().endsWith('.gif');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0F1014] flex items-center justify-center">
@@ -119,6 +125,16 @@ const ProjectPage = () => {
                   GITHUB
                 </a>
               )}
+              {project.downloadUrl && (
+                <a 
+                  href={project.downloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-8 py-3 bg-indigo-700 text-white rounded hover:bg-indigo-600 transition-colors"
+                >
+                  DOWNLOAD
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -151,11 +167,21 @@ const ProjectPage = () => {
             {project.images?.map((image, index) => (
               <div key={index} className="bg-gray-900 rounded-lg overflow-hidden">
                 <div className="aspect-[16/9] relative">
-                  <img 
-                    src={image.url || "/api/placeholder/300/200"}
-                    alt={image.title || `Project image ${index + 1}`}
-                    className="absolute w-full h-full object-contain bg-gray-900"
-                  />
+                  {isGif(image.url) ? (
+                    // GIF handling
+                    <img 
+                      src={image.url}
+                      alt={image.title || `Project image ${index + 1}`}
+                      className="absolute w-full h-full object-contain bg-gray-900"
+                    />
+                  ) : (
+                    // Regular image handling
+                    <img 
+                      src={image.url || "/api/placeholder/300/200"}
+                      alt={image.title || `Project image ${index + 1}`}
+                      className="absolute w-full h-full object-contain bg-gray-900"
+                    />
+                  )}
                 </div>
                 {(image.title || image.description) && (
                   <div className="p-4">
@@ -177,6 +203,22 @@ const ProjectPage = () => {
 
         {activeTab === 'details' && (
           <div className="text-white">
+            {project.downloadUrl && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">Download</h2>
+                <p className="text-gray-300 mb-3">
+                  Download the project files to run locally on your machine.
+                </p>
+                <a 
+                  href={project.downloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-6 py-2 bg-indigo-700 text-white rounded hover:bg-indigo-600 transition-colors"
+                >
+                  Download ZIP
+                </a>
+              </div>
+            )}
             {project.technologies && project.technologies.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold mb-4">Technologies Used</h2>

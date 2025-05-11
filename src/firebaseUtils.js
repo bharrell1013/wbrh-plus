@@ -59,7 +59,7 @@ import {
     }
   };
   
-  export const addProject = async (projectData, imageFile) => {
+  export const addProject = async (projectData, imageFile, zipFile) => {
     try {
       // Upload image first if provided
       let imageUrl = null;
@@ -69,16 +69,50 @@ import {
         imageUrl = await getDownloadURL(storageRef);
       }
   
+      // Upload ZIP file if provided
+      let downloadUrl = null;
+      if (zipFile) {
+        const zipStorageRef = ref(storage, `downloads/${Date.now()}_${zipFile.name}`);
+        await uploadBytes(zipStorageRef, zipFile);
+        downloadUrl = await getDownloadURL(zipStorageRef);
+      }
+  
       // Add project to Firestore
       const docRef = await addDoc(collection(db, 'projects'), {
         ...projectData,
         imageUrl,
+        downloadUrl,
         createdAt: new Date()
       });
   
       return docRef.id;
     } catch (error) {
       console.error('Error adding project:', error);
+      throw error;
+    }
+  };
+  
+  // ZIP File upload
+  export const uploadZipFile = async (zipFile, fileName) => {
+    try {
+      // Use a timestamped file name to avoid collisions
+      const safeName = fileName || `${Date.now()}_${zipFile.name}`;
+      
+      // Create a reference to the downloads folder for zip files
+      const storageRef = ref(storage, `downloads/${safeName}`);
+      
+      // Upload the zip file
+      await uploadBytes(storageRef, zipFile);
+      
+      // Get the download URL
+      const downloadUrl = await getDownloadURL(storageRef);
+      
+      return {
+        fileName: safeName,
+        downloadUrl
+      };
+    } catch (error) {
+      console.error('Error uploading ZIP file:', error);
       throw error;
     }
   };
