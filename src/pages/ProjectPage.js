@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import { localProjects } from '../data/localProjects';
 
 // Tab components
 const TabButton = ({ active, children, onClick }) => (
@@ -29,6 +30,16 @@ const ProjectPage = () => {
     const fetchProject = async () => {
       try {
         setLoading(true);
+
+        // Check local projects first
+        const localProject = localProjects.find(p => p.id === projectId);
+        if (localProject) {
+          console.log('Found local project:', localProject);
+          setProject(localProject);
+          setLoading(false);
+          return;
+        }
+
         const projectRef = doc(db, 'projects', projectId);
         const projectSnap = await getDoc(projectRef);
         
@@ -60,6 +71,11 @@ const ProjectPage = () => {
     return url.toLowerCase().endsWith('.gif');
   };
 
+  // Special handling for projects that need contain fit
+  const needsContain = project?.imageFit === 'contain' || 
+                       project?.id === 'wbrh-plus' || 
+                       project?.title?.toLowerCase().includes('wbrh');
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0F1014] flex items-center justify-center">
@@ -84,7 +100,7 @@ const ProjectPage = () => {
           <img 
             src={project.imageUrl || "/api/placeholder/1200/600"}
             alt={project.title}
-            className="w-full h-full object-contain"
+            className={`w-full h-full ${needsContain ? 'object-contain' : 'object-cover'}`}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0F1014] via-transparent to-transparent" />
         </div>
@@ -163,42 +179,52 @@ const ProjectPage = () => {
       {/* Tab Content */}
       <div className="max-w-7xl mx-auto px-8 py-8">
         {activeTab === 'images' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {project.images?.map((image, index) => (
-              <div key={index} className="bg-gray-900 rounded-lg overflow-hidden">
-                <div className="aspect-[16/9] relative">
-                  {isGif(image.url) ? (
-                    // GIF handling
-                    <img 
-                      src={image.url}
-                      alt={image.title || `Project image ${index + 1}`}
-                      className="absolute w-full h-full object-contain bg-gray-900"
-                    />
-                  ) : (
-                    // Regular image handling
-                    <img 
-                      src={image.url || "/api/placeholder/300/200"}
-                      alt={image.title || `Project image ${index + 1}`}
-                      className="absolute w-full h-full object-contain bg-gray-900"
-                    />
-                  )}
-                </div>
-                {(image.title || image.description) && (
-                  <div className="p-4">
-                    {image.title && (
-                      <h3 className="text-white font-medium mb-2">{image.title}</h3>
-                    )}
-                    {image.description && (
-                      <p className="text-gray-400 text-sm">{image.description}</p>
+          <>
+            {project.imagesNote ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <p className="text-gray-400 text-lg mb-4 text-center max-w-2xl">
+                  {project.imagesNote}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {project.images?.map((image, index) => (
+                  <div key={index} className="bg-gray-900 rounded-lg overflow-hidden">
+                    <div className="aspect-[16/9] relative">
+                      {isGif(image.url) ? (
+                        // GIF handling
+                        <img 
+                          src={image.url}
+                          alt={image.title || `Project image ${index + 1}`}
+                          className="absolute w-full h-full object-contain bg-gray-900"
+                        />
+                      ) : (
+                        // Regular image handling
+                        <img 
+                          src={image.url || "/api/placeholder/300/200"}
+                          alt={image.title || `Project image ${index + 1}`}
+                          className="absolute w-full h-full object-contain bg-gray-900"
+                        />
+                      )}
+                    </div>
+                    {(image.title || image.description) && (
+                      <div className="p-4">
+                        {image.title && (
+                          <h3 className="text-white font-medium mb-2">{image.title}</h3>
+                        )}
+                        {image.description && (
+                          <p className="text-gray-400 text-sm">{image.description}</p>
+                        )}
+                      </div>
                     )}
                   </div>
+                ))}
+                {(!project.images || project.images.length === 0) && (
+                  <div className="text-gray-400">No images available</div>
                 )}
               </div>
-            ))}
-            {(!project.images || project.images.length === 0) && (
-              <div className="text-gray-400">No images available</div>
             )}
-          </div>
+          </>
         )}
 
         {activeTab === 'details' && (

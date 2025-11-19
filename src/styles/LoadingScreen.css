@@ -5,9 +5,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #0F1014;
+    background-color: #1a1d29;
     opacity: 1;
     transition: opacity 0.5s ease-out;
+    z-index: 100;
   }
   
   .intro-container.fade-out {

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getCategoryByDocId, getProjects } from '../firebaseUtils';
+import { localCategories, localProjects } from '../data/localProjects';
 import ProjectTile from '../components/ProjectTile';
 
 const CategoryPage = () => {
@@ -16,6 +17,33 @@ const CategoryPage = () => {
         setLoading(true);
         console.log('Attempting to fetch category with ID:', categoryId);
         
+        // 1. Check local categories first
+        const localCategory = localCategories.find(c => c.id === categoryId);
+        if (localCategory) {
+            console.log('Found local category:', localCategory);
+            setCategory(localCategory);
+            
+            if (categoryId === 'professional') {
+              // Filter local projects for professional
+              const categoryProjects = localProjects.filter(p => p.categoryId === 'professional');
+              setProjects(categoryProjects);
+            } else if (categoryId === 'personal') {
+              // For personal, get all projects that are NOT professional
+              const firebaseProjects = await getProjects();
+              const allProjects = [...localProjects, ...firebaseProjects];
+              const personalProjects = allProjects.filter(p => p.categoryId !== 'professional');
+              setProjects(personalProjects);
+            } else {
+              // Filter local projects
+              const categoryProjects = localProjects.filter(p => p.categoryId === categoryId);
+              setProjects(categoryProjects);
+            }
+            
+            setLoading(false);
+            return;
+        }
+
+        // 2. Fallback to Firebase
         // Fetch category details using the document ID
         const categoryData = await getCategoryByDocId(categoryId);
         console.log('Retrieved category data:', categoryData);
