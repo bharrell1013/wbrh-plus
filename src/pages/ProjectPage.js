@@ -1,18 +1,18 @@
 // pages/ProjectPage.js
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
-import { localProjects } from '../data/localProjects';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+import { localProjects } from "../data/localProjects";
 
 // Tab components
 const TabButton = ({ active, children, onClick }) => (
   <button
     onClick={onClick}
     className={`px-6 py-3 text-lg ${
-      active 
-        ? 'text-white border-b-2 border-white font-medium' 
-        : 'text-gray-400 hover:text-white'
+      active
+        ? "text-white border-b-2 border-white font-medium"
+        : "text-gray-400 hover:text-white"
     }`}
   >
     {children}
@@ -21,7 +21,7 @@ const TabButton = ({ active, children, onClick }) => (
 
 const ProjectPage = () => {
   const { projectId } = useParams();
-  const [activeTab, setActiveTab] = useState('images');
+  const [activeTab, setActiveTab] = useState("images");
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,31 +32,31 @@ const ProjectPage = () => {
         setLoading(true);
 
         // Check local projects first
-        const localProject = localProjects.find(p => p.id === projectId);
+        const localProject = localProjects.find((p) => p.id === projectId);
         if (localProject) {
-          console.log('Found local project:', localProject);
+          console.log("Found local project:", localProject);
           setProject(localProject);
           setLoading(false);
           return;
         }
 
-        const projectRef = doc(db, 'projects', projectId);
+        const projectRef = doc(db, "projects", projectId);
         const projectSnap = await getDoc(projectRef);
-        
+
         if (projectSnap.exists()) {
           const projectData = {
             id: projectSnap.id,
             ...projectSnap.data(),
-            createdAt: projectSnap.data().createdAt?.toDate()
+            createdAt: projectSnap.data().createdAt?.toDate(),
           };
-          console.log('Fetched project:', projectData);
+          console.log("Fetched project:", projectData);
           setProject(projectData);
         } else {
-          setError('Project not found');
+          setError("Project not found");
         }
       } catch (err) {
-        console.error('Error fetching project:', err);
-        setError('Error loading project');
+        console.error("Error fetching project:", err);
+        setError("Error loading project");
       } finally {
         setLoading(false);
       }
@@ -68,13 +68,14 @@ const ProjectPage = () => {
   // Helper function to check if an image is a GIF
   const isGif = (url) => {
     if (!url) return false;
-    return url.toLowerCase().endsWith('.gif');
+    return url.toLowerCase().endsWith(".gif");
   };
 
   // Special handling for projects that need contain fit
-  const needsContain = project?.imageFit === 'contain' || 
-                       project?.id === 'wbrh-plus' || 
-                       project?.title?.toLowerCase().includes('wbrh');
+  const needsContain =
+    project?.imageFit === "contain" ||
+    project?.id === "wbrh-plus" ||
+    project?.title?.toLowerCase().includes("wbrh");
 
   if (loading) {
     return (
@@ -87,7 +88,7 @@ const ProjectPage = () => {
   if (error || !project) {
     return (
       <div className="min-h-screen bg-[#0F1014] flex items-center justify-center">
-        <div className="text-white">{error || 'Project not found'}</div>
+        <div className="text-white">{error || "Project not found"}</div>
       </div>
     );
   }
@@ -95,26 +96,34 @@ const ProjectPage = () => {
   return (
     <div className="min-h-screen bg-[#0F1014] pt-16">
       {/* Hero Section */}
-      <div className="relative w-full" style={{ height: "calc(100vh - 64px)" }}>
+      <div className="relative w-full h-[50vh] md:h-[calc(100vh-64px)]">
         <div className="absolute inset-0 bg-gray-900">
-          <img 
+          <img
             src={project.imageUrl || "/api/placeholder/1200/600"}
             alt={project.title}
-            className={`w-full h-full ${needsContain ? 'object-contain' : 'object-cover'}`}
+            className={`w-full h-full ${
+              needsContain ? "object-contain" : "object-cover"
+            }`}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0F1014] via-transparent to-transparent" />
         </div>
-        
+
         {/* Content Overlay */}
         <div className="absolute bottom-0 left-0 p-8 w-full">
           <div className="max-w-3xl">
-            <h1 className="text-5xl font-bold text-white mb-4">{project.title}</h1>
+            <h1 className="text-5xl font-bold text-white mb-4">
+              {project.title}
+            </h1>
             <p className="text-gray-300 text-lg mb-4">
-              {[...project.technologies || []].join(' • ')} • {project.createdAt?.getFullYear()}
+              {[...(project.technologies || [])].join(" • ")} •{" "}
+              {project.createdAt?.getFullYear()}
             </p>
             <div className="flex flex-wrap space-x-2 mb-6">
-              {project.technologies?.map(tag => (
-                <span key={tag} className="px-2 py-1 bg-gray-800 rounded-sm text-sm text-gray-300">
+              {project.technologies?.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2 py-1 bg-gray-800 rounded-sm text-sm text-gray-300"
+                >
                   {tag}
                 </span>
               ))}
@@ -122,9 +131,9 @@ const ProjectPage = () => {
             <p className="text-gray-200 text-lg mb-8">{project.description}</p>
             <div className="flex space-x-4">
               {project.links?.live && (
-                <a 
-                  href={project.links.live} 
-                  target="_blank" 
+                <a
+                  href={project.links.live}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="px-8 py-3 bg-white text-black rounded hover:bg-gray-200 transition-colors"
                 >
@@ -132,7 +141,7 @@ const ProjectPage = () => {
                 </a>
               )}
               {project.links?.github && (
-                <a 
+                <a
                   href={project.links.github}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -142,7 +151,7 @@ const ProjectPage = () => {
                 </a>
               )}
               {project.downloadUrl && (
-                <a 
+                <a
                   href={project.downloadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -160,15 +169,15 @@ const ProjectPage = () => {
       <div className="border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-8">
           <div className="flex space-x-6">
-            <TabButton 
-              active={activeTab === 'images'} 
-              onClick={() => setActiveTab('images')}
+            <TabButton
+              active={activeTab === "images"}
+              onClick={() => setActiveTab("images")}
             >
               IMAGES
             </TabButton>
-            <TabButton 
-              active={activeTab === 'details'} 
-              onClick={() => setActiveTab('details')}
+            <TabButton
+              active={activeTab === "details"}
+              onClick={() => setActiveTab("details")}
             >
               DETAILS
             </TabButton>
@@ -178,7 +187,7 @@ const ProjectPage = () => {
 
       {/* Tab Content */}
       <div className="max-w-7xl mx-auto px-8 py-8">
-        {activeTab === 'images' && (
+        {activeTab === "images" && (
           <>
             {project.imagesNote ? (
               <div className="flex flex-col items-center justify-center py-20">
@@ -189,18 +198,21 @@ const ProjectPage = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {project.images?.map((image, index) => (
-                  <div key={index} className="bg-gray-900 rounded-lg overflow-hidden">
+                  <div
+                    key={index}
+                    className="bg-gray-900 rounded-lg overflow-hidden"
+                  >
                     <div className="aspect-[16/9] relative">
                       {isGif(image.url) ? (
                         // GIF handling
-                        <img 
+                        <img
                           src={image.url}
                           alt={image.title || `Project image ${index + 1}`}
                           className="absolute w-full h-full object-contain bg-gray-900"
                         />
                       ) : (
                         // Regular image handling
-                        <img 
+                        <img
                           src={image.url || "/api/placeholder/300/200"}
                           alt={image.title || `Project image ${index + 1}`}
                           className="absolute w-full h-full object-contain bg-gray-900"
@@ -210,10 +222,14 @@ const ProjectPage = () => {
                     {(image.title || image.description) && (
                       <div className="p-4">
                         {image.title && (
-                          <h3 className="text-white font-medium mb-2">{image.title}</h3>
+                          <h3 className="text-white font-medium mb-2">
+                            {image.title}
+                          </h3>
                         )}
                         {image.description && (
-                          <p className="text-gray-400 text-sm">{image.description}</p>
+                          <p className="text-gray-400 text-sm">
+                            {image.description}
+                          </p>
                         )}
                       </div>
                     )}
@@ -227,7 +243,7 @@ const ProjectPage = () => {
           </>
         )}
 
-        {activeTab === 'details' && (
+        {activeTab === "details" && (
           <div className="text-white">
             {project.downloadUrl && (
               <div className="mb-8">
@@ -235,7 +251,7 @@ const ProjectPage = () => {
                 <p className="text-gray-300 mb-3">
                   Download the project files to run locally on your machine.
                 </p>
-                <a 
+                <a
                   href={project.downloadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -249,7 +265,7 @@ const ProjectPage = () => {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold mb-4">Technologies Used</h2>
                 <div className="flex flex-wrap gap-2">
-                  {project.technologies.map(tech => (
+                  {project.technologies.map((tech) => (
                     <span key={tech} className="px-3 py-1 bg-gray-800 rounded">
                       {tech}
                     </span>
@@ -261,7 +277,7 @@ const ProjectPage = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-4">Key Features</h2>
                 <ul className="list-disc pl-5 space-y-2">
-                  {project.features.map(feature => (
+                  {project.features.map((feature) => (
                     <li key={feature} className="text-gray-300">
                       {feature}
                     </li>
