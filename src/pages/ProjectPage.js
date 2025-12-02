@@ -96,8 +96,8 @@ const ProjectPage = () => {
   return (
     <div className="min-h-screen bg-[#0F1014] pt-16">
       {/* Hero Section */}
-      <div className="relative w-full h-[50vh] md:h-[calc(100vh-64px)]">
-        <div className="absolute inset-0 bg-gray-900">
+      <div className="relative w-full min-h-[50vh] md:min-h-[calc(100vh-64px)] flex flex-col justify-end">
+        <div className="absolute inset-0 bg-gray-900 z-0">
           <img
             src={project.imageUrl || "/api/placeholder/1200/600"}
             alt={project.title}
@@ -109,7 +109,7 @@ const ProjectPage = () => {
         </div>
 
         {/* Content Overlay */}
-        <div className="absolute bottom-0 left-0 p-8 w-full">
+        <div className="relative z-10 p-8 w-full">
           <div className="max-w-3xl">
             <h1 className="text-5xl font-bold text-white mb-4">
               {project.title}
@@ -129,7 +129,7 @@ const ProjectPage = () => {
               ))}
             </div>
             <p className="text-gray-200 text-lg mb-8">{project.description}</p>
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap gap-4">
               {project.links?.live && (
                 <a
                   href={project.links.live}
@@ -158,6 +158,16 @@ const ProjectPage = () => {
                   className="px-8 py-3 bg-indigo-700 text-white rounded hover:bg-indigo-600 transition-colors"
                 >
                   DOWNLOAD
+                </a>
+              )}
+              {project.links?.collectr && (
+                <a
+                  href={project.links.collectr}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-8 py-3 bg-gradient-to-r from-sky-500 to-cyan-400 text-white font-bold rounded hover:from-sky-400 hover:to-cyan-300 transition-all shadow-lg"
+                >
+                  BONUS: MY COLLECTION
                 </a>
               )}
             </div>

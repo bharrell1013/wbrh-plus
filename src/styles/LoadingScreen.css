@@ -1,117 +1,121 @@
 /* LoadingScreen.css */
 .intro-container {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #1a1d29;
+  position: fixed;
+  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1a1d29;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+  z-index: 100;
+}
+
+.intro-container.fade-out {
+  opacity: 0;
+}
+
+.animation-wrapper {
+  position: relative;
+  width: 400px;
+  height: 120px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.logo-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.logo-text {
+  font-family: "Montserrat", sans-serif;
+  color: white;
+  font-size: 5rem;
+  letter-spacing: -2px;
+  font-weight: 700;
+  margin: 0;
+  opacity: 0;
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.arc-container {
+  position: absolute;
+  top: -120px;
+  left: 0;
+  width: 400px;
+  height: 400px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.arc {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top: 3px solid #00b4d8;
+  transform: translateY(20%) translateX(-15%);
+  opacity: 0;
+  clip-path: inset(0 100% 100% 0);
+  animation: arc-reveal 1.2s ease-out forwards;
+  filter: drop-shadow(0 0 4px rgba(0, 180, 216, 0.5));
+}
+
+.plus-container {
+  position: relative;
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.plus-text {
+  font-family: "Arial", sans-serif;
+  color: white;
+  font-size: 5rem;
+  font-weight: 300;
+  margin: 0;
+  opacity: 0;
+  transform: scale(0.5);
+  animation: plus-animation 0.5s ease-out forwards;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
     opacity: 1;
-    transition: opacity 0.5s ease-out;
-    z-index: 100;
+    transform: scale(1);
   }
-  
-  .intro-container.fade-out {
-    opacity: 0;
-  }
-  
-  .animation-wrapper {
-    position: relative;
-    width: 400px;
-    height: 120px;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  }
-  
-  .logo-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-  
-  .logo-text {
-    font-family: 'Montserrat', sans-serif;
-    color: white;
-    font-size: 5rem;
-    letter-spacing: -2px;
-    font-weight: 700;
-    margin: 0;
-    opacity: 0;
-    animation: fade-in 0.5s ease-out forwards;
-  }
-  
-  .arc-container {
-    position: absolute;
-    top: -120px;
-    left: 0;
-    width: 400px;
-    height: 400px;
-    pointer-events: none;
-    overflow: visible;
-  }
-  
-  .arc {
-    position: absolute;
-    width: 400px;
-    height: 400px;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    border-top: 3px solid #00b4d8;
-    transform: translateY(20%) translateX(-15%);
-    opacity: 0;
+}
+
+@keyframes arc-reveal {
+  0% {
+    opacity: 1;
     clip-path: inset(0 100% 100% 0);
-    animation: arc-reveal 1.2s ease-out forwards;
-    filter: drop-shadow(0 0 4px rgba(0, 180, 216, 0.5));
   }
-  
-  .plus-container {
-    position: relative;
-    margin-left: 8px;
-    display: flex;
-    align-items: center;
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
   }
-  
-  .plus-text {
-    font-family: 'Arial', sans-serif;
-    color: white;
-    font-size: 5rem;
-    font-weight: 300;
-    margin: 0;
+}
+
+@keyframes plus-animation {
+  0% {
     opacity: 0;
     transform: scale(0.5);
-    animation: plus-animation 0.5s ease-out forwards;
   }
-  
-  @keyframes fade-in {
-    0% {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
-  
-  @keyframes arc-reveal {
-    0% {
-      opacity: 1;
-      clip-path: inset(0 100% 100% 0);
-    }
-    100% {
-      opacity: 1;
-      clip-path: inset(0 0 0 0);
-    }
-  }
-  
-  @keyframes plus-animation {
-    0% {
-      opacity: 0;
-      transform: scale(0.5);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
+}

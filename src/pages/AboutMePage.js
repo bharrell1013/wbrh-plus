@@ -1,6 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { getProjects } from "../firebaseUtils";
 
 const AboutMePage = () => {
+  const [collectrLink, setCollectrLink] = useState(
+    "https://app.getcollectr.com/"
+  );
+
+  useEffect(() => {
+    const fetchLink = async () => {
+      try {
+        const projects = await getProjects();
+        const projectWithLink = projects.find((p) => p.links?.collectr);
+        if (projectWithLink?.links?.collectr) {
+          setCollectrLink(projectWithLink.links.collectr);
+        }
+      } catch (error) {
+        console.error("Error fetching collectr link:", error);
+      }
+    };
+
+    fetchLink();
+  }, []);
+
   const skills = [
     {
       category: "Languages",
@@ -82,9 +103,18 @@ const AboutMePage = () => {
 
           <p className="text-gray-200 text-lg leading-relaxed drop-shadow-sm">
             When I’m not coding, I’m usually playing story-driven games,
-            watching movies, or tinkering with whatever idea catches my
-            attention. I like exploring creative projects just to see where they
-            lead, and that same curiosity follows me into everything I build.
+            watching movies,{" "}
+            <a
+              href={collectrLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 transition-colors font-semibold"
+            >
+              collecting Pokémon cards
+            </a>
+            , or tinkering with whatever idea catches my attention. I like
+            exploring creative projects just to see where they lead, and that
+            same curiosity follows me into everything I build.
           </p>
         </div>
 
@@ -118,7 +148,7 @@ const AboutMePage = () => {
         </div>
 
         {/* Additional Sections */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           <div className="bg-[#1e2129]/90 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-gray-700/50 hover:border-gray-600 transition-all duration-300">
             <h3 className="text-2xl font-semibold text-white mb-4 drop-shadow-md">
               Education
@@ -170,6 +200,54 @@ const AboutMePage = () => {
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+
+        {/* Links Section */}
+        <div className="bg-[#1e2129]/90 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-gray-700/50 hover:border-gray-600 transition-all duration-300">
+          <h3 className="text-2xl font-semibold text-white mb-6 drop-shadow-md">
+            Links
+          </h3>
+          <div className="flex flex-wrap gap-4">
+            <a
+              href="https://www.linkedin.com/in/william-bailey-rankin-harrell/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-3 px-6 py-3 bg-[#0077b5] rounded-lg text-white font-semibold hover:bg-[#006396] transition-all shadow-lg group border border-blue-400/20"
+            >
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/wbrh-plus.firebasestorage.app/o/about-me%2Flinkedin_logo.png?alt=media&token=7099910d-8369-433e-a322-45aae0cba3e7"
+                alt="LinkedIn"
+                className="w-6 h-6 object-contain"
+              />
+              <span>LinkedIn</span>
+            </a>
+            <a
+              href="https://github.com/bharrell1013"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-3 px-6 py-3 bg-[#24292e] rounded-lg text-white font-semibold hover:bg-[#2f363d] transition-all shadow-lg group border border-gray-700"
+            >
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/wbrh-plus.firebasestorage.app/o/about-me%2Fgithub_logo.png?alt=media&token=ebe1effe-01ee-44bb-b750-d3a7155e8623"
+                alt="GitHub"
+                className="w-6 h-6 object-contain"
+              />
+              <span>GitHub</span>
+            </a>
+            <a
+              href={collectrLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-3 px-6 py-3 bg-gradient-to-r from-sky-500 to-cyan-400 rounded-lg text-white font-semibold hover:from-sky-400 hover:to-cyan-300 transition-all shadow-lg group"
+            >
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/wbrh-plus.firebasestorage.app/o/about-me%2Fcollectr_logo.png?alt=media&token=fd9842ac-50be-4b1d-8e62-41d4f1ab6b23"
+                alt="Collectr"
+                className="w-6 h-6 object-contain"
+              />
+              <span>Collectr</span>
+            </a>
           </div>
         </div>
       </div>
