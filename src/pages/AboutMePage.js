@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { getProjects } from "../firebaseUtils";
+// import { getProjects } from "../firebaseUtils"; // Uncomment this in your actual project
+
+// --- MOCK DATA FOR PREVIEW PURPOSES (DELETE THIS IN YOUR PROJECT) ---
+const getProjects = async () => {
+  // Simulating the fetch delay
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return [
+    {
+      links: {
+        collectr: "https://app.getcollectr.com/",
+      },
+    },
+  ];
+};
+// -------------------------------------------------------------------
 
 const AboutMePage = () => {
   const [collectrLink, setCollectrLink] = useState(
