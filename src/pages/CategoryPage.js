@@ -1,9 +1,9 @@
 // pages/CategoryPage.js
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { getCategoryByDocId, getProjects } from '../firebaseUtils';
-import { localCategories, localProjects } from '../data/localProjects';
-import ProjectTile from '../components/ProjectTile';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { getCategoryByDocId, getProjects } from "../firebaseUtils";
+import { localCategories, localProjects } from "../data/localProjects";
+import ProjectTile from "../components/ProjectTile";
 
 const CategoryPage = () => {
   const { categoryId } = useParams();
@@ -15,46 +15,52 @@ const CategoryPage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        console.log('Attempting to fetch category with ID:', categoryId);
-        
+        console.log("Attempting to fetch category with ID:", categoryId);
+
         // 1. Check local categories first
-        const localCategory = localCategories.find(c => c.id === categoryId);
+        const localCategory = localCategories.find((c) => c.id === categoryId);
         if (localCategory) {
-            console.log('Found local category:', localCategory);
-            setCategory(localCategory);
-            
-            if (categoryId === 'professional') {
-              // Filter local projects for professional
-              const categoryProjects = localProjects.filter(p => p.categoryId === 'professional');
-              setProjects(categoryProjects);
-            } else if (categoryId === 'personal') {
-              // For personal, get all projects that are NOT professional
-              const firebaseProjects = await getProjects();
-              const allProjects = [...localProjects, ...firebaseProjects];
-              const personalProjects = allProjects.filter(p => p.categoryId !== 'professional');
-              setProjects(personalProjects);
-            } else {
-              // Filter local projects
-              const categoryProjects = localProjects.filter(p => p.categoryId === categoryId);
-              setProjects(categoryProjects);
-            }
-            
-            setLoading(false);
-            return;
+          console.log("Found local category:", localCategory);
+          setCategory(localCategory);
+
+          if (categoryId === "professional") {
+            // Filter local projects for professional
+            const categoryProjects = localProjects.filter(
+              (p) => p.categoryId === "professional"
+            );
+            setProjects(categoryProjects);
+          } else if (categoryId === "personal") {
+            // For personal, get all projects that are NOT professional
+            const firebaseProjects = await getProjects();
+            const allProjects = [...localProjects, ...firebaseProjects];
+            const personalProjects = allProjects.filter(
+              (p) => p.categoryId !== "professional"
+            );
+            setProjects(personalProjects);
+          } else {
+            // Filter local projects
+            const categoryProjects = localProjects.filter(
+              (p) => p.categoryId === categoryId
+            );
+            setProjects(categoryProjects);
+          }
+
+          setLoading(false);
+          return;
         }
 
         // 2. Fallback to Firebase
         // Fetch category details using the document ID
         const categoryData = await getCategoryByDocId(categoryId);
-        console.log('Retrieved category data:', categoryData);
+        console.log("Retrieved category data:", categoryData);
         setCategory(categoryData);
 
         // Fetch projects for this category
         const projectsData = await getProjects(categoryId);
-        console.log('Retrieved projects:', projectsData);
+        console.log("Retrieved projects:", projectsData);
         setProjects(projectsData);
       } catch (error) {
-        console.error('Error fetching category data:', error);
+        console.error("Error fetching category data:", error);
       } finally {
         setLoading(false);
       }
@@ -82,9 +88,9 @@ const CategoryPage = () => {
   return (
     <div className="min-h-screen bg-[#0F1014]">
       {/* Category Banner */}
-      <div className="relative h-[40vh] w-full">
+      <div className="relative h-auto aspect-video md:h-[40vh] w-full">
         {category.bannerImage && (
-          <img 
+          <img
             src={category.bannerImage}
             alt={category.title}
             className="w-full h-full object-cover"
@@ -92,7 +98,9 @@ const CategoryPage = () => {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0F1014] via-[#0F1014]/60 to-transparent">
           <div className="absolute bottom-0 left-0 p-8">
-            <h1 className="text-4xl font-bold text-white mb-2">{category.title}</h1>
+            <h1 className="text-4xl font-bold text-white mb-2">
+              {category.title}
+            </h1>
             <p className="text-gray-300 text-lg">{category.description}</p>
           </div>
         </div>
@@ -101,8 +109,11 @@ const CategoryPage = () => {
       {/* Projects Grid */}
       <div className="max-w-7xl mx-auto px-8 py-12">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {projects.map(project => (
-            <div key={project.id} className="group transition-transform hover:scale-105">
+          {projects.map((project) => (
+            <div
+              key={project.id}
+              className="group transition-transform hover:scale-105"
+            >
               <ProjectTile project={project} />
               <div className="mt-2">
                 <h3 className="text-white font-medium text-sm truncate">
