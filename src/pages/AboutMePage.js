@@ -8,7 +8,8 @@ const getProjects = async () => {
   return [
     {
       links: {
-        collectr: "https://app.getcollectr.com/",
+        collectr:
+          "https://app.getcollectr.com/showcase/profile/84112572-7e99-40a4-b038-d0c01f122005",
       },
     },
   ];
@@ -17,7 +18,7 @@ const getProjects = async () => {
 
 const AboutMePage = () => {
   const [collectrLink, setCollectrLink] = useState(
-    "https://app.getcollectr.com/"
+    "https://app.getcollectr.com/showcase/profile/84112572-7e99-40a4-b038-d0c01f122005"
   );
 
   useEffect(() => {
